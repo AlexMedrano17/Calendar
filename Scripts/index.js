@@ -6,10 +6,12 @@ function CreateCalendar(date) {
   monthDaysElement.innerHTML = "";
 
   let year = date.getFullYear();
-  let month = date.getMonth();
 
-  let numberOfDays = new Date(year, month + 1, 0).getDate();
-  let dayOfWeek = new Date(year, month, 1).getDay();
+  let originalMonth = date.getMonth(), 
+      normalMonth = date.getMonth() + 1;
+
+  let numberOfDays = new Date(year, originalMonth, 0).getDate();
+  let dayOfWeek = new Date(year, originalMonth, 1).getDay();
 
   let list = numberOfDays > 30 && dayOfWeek > 4 ? 6 : 5;
 
@@ -29,7 +31,7 @@ function CreateCalendar(date) {
   document.querySelector(".calendar").appendChild(monthDaysElement);
 
   let daysElement = [...document.getElementsByClassName("day")];
-  let previousMonthDays = new Date(year, month, 0).getDate();
+  let previousMonthDays = new Date(year, originalMonth, 0).getDate();
 
   for (
     let j = previousMonthDays - dayOfWeek + 1, previousCounter = 0;
@@ -40,20 +42,19 @@ function CreateCalendar(date) {
       let element = daysElement[previousCounter];
       element.innerText = j;
       element.classList.add("previousMonthDay");
-      let cMonth = month % 12 || 12;
-      element.dataset.date = `${element.innerText}/${cMonth}/${
-        month > 0 ? year : year - 1
-      }`;
+      let cMonth = originalMonth % 12 || 12;
+      element.dataset.date = `${element.innerText}/${cMonth}/${originalMonth > 0 ? year : year - 1
+        }`;
     }
   }
 
   for (let j = 0, n = dayOfWeek; j < numberOfDays; j++, n++) {
-    let element = daysElement[n];
+    const element = daysElement[n];
     element.innerText = j + 1;
     element.classList.add("actualDayMonth");
-    element.dataset.date = `${element.innerText}/${+month + 1}/${year}`;
+    element.dataset.date = `${element.innerText}/${normalMonth}/${year}`;
 
-    if (element.dataset.date === actualDate.toLocaleDateString()) {
+    if (element.dataset.date === actualDate.toLocaleDateString('es-DO')) {
       element.classList.add("today");
     }
   }
@@ -63,16 +64,15 @@ function CreateCalendar(date) {
     .forEach((element, i) => {
       element.classList.add("nextMonthDay");
       element.innerText = i + 1;
-      let cMonth = month + (2 % 12) === 13 ? 1 : month + (2 % 12);
-      element.dataset.date = `${element.innerText}/${cMonth}/${
-        month + 1 < 12 ? year : year + 1
-      }`;
+      let cMonth = normalMonth % 12;
+      element.dataset.date = `${element.innerText}/${cMonth + 1}/${normalMonth < 12 ? year : year + 1
+        }`;
     });
 
   for (let index = 0; index < daysElement.length; index++) {
     const element = daysElement[index];
     element.addEventListener("click", (e) => {
-      console.log(e.target.dataset.date);
+      alert(e.target.dataset.date);
     });
   }
 }
